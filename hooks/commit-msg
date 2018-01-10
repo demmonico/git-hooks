@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# Verify commit message for standards, such as:
+# 1) Message must starts with any latin symbol
+# 2) Message must contains no less than 12 characters
+#
+# @package   .git/hooks
+# @author Dmitry Prekrasnyy <demmonico@gmail.com>
+
+
+
+# Regex to validate a commit message
+REGEX="^[A-Za-z]+.{11,}$"
+
+# Get commit message
+MESSAGE=$(<$1)
+
+echo
+echo "Checking commit message format" 
+echo '------------------------------------------'
+
+# If the commit message does not match the regex
+if ! [[ $MESSAGE =~ $REGEX ]]; then
+  echo
+  echo "Wrong commit message format. Commit message must follow the format: $REGEX"
+  exit 1
+else
+  echo
+  echo '🍺  No errors found!'
+fi
+
+exit 0

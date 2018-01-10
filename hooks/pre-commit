@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# Verify commiting files for coding standards and syntax errors:
+# 1) PSR-2
+# 2) Verify PHP code using "php -l" verifier
+#
+# Dependencies:
+#     - PHP
+#     - codesniffer (http://pear.php.net/package/PHP_CodeSniffer)
+#
+# @package   .git/hooks
+# @author Dmitry Prekrasnyy <demmonico@gmail.com>
+
+
+
+# create empty errors array
+declare -a errors
+
+# Check if we're on a semi-secret empty tree
+if git rev-parse --verify HEAD
+then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# Check that all required tools are set
+command -v phpcs >/dev/null 2>&1 || { echo "Please install phpcs before commiting. Aborting." >&2; exit 1; }
+
+# fetch all changed php files and validate them
+files=$(git diff-index --name-only --cached --diff-filter=ACMR $against | grep '\.php$')
+if [ -n "$files" ]; then
+
+    echo 'Checking PHP Files'
+    echo '------------------'
+    echo
+
+    for file in $files; do
+
+        # first check if they are valid php files
+        output=`php -l $file | grep 'Errors parsing'`
+
+        # if it did contain errors, we have output
+        if [ -n "$output" ]; then
+            echo "$file contains php syntax errors"
+            errors=("${errors[@]}" "$output")
+        fi
+
+        # checks if the phpcs output contains '| ERROR |'
+        output=`phpcs --standard=PSR2 --extensions=php --encoding=utf8 --report=full $file`
+        onlyErrors=$(echo "$output" | grep '| ERROR')
+
+        # if it did contain errors, we have output
+        if [ -n "$onlyErrors" ]; then
+            echo "$file fails coding standards"
+            echo "$output"
+			errors=("${errors[@]}" "$output")
+        elif [ -n "$output" ]; then
+            echo "$file contains warnings"
+            echo "$output"
+        fi
+    done
+fi
+
+# if we have errors, exit with 1
+if [ -n "$errors" ]; then
+    exit 1
+fi
+
+echo '🍺  No errors found!'
