@@ -6,8 +6,9 @@ Forked from [this](https://github.com/demmonico/bash) repository.
 
 ## Includes
 
- - PSR-2 pre-commit hook
- - Commit message pre-commit hook (should use only for *issue*-oriented commit naming convention)
+ - PSR-2 **pre-commit** hook
+ - Commit message **pre-commit** hook (should use only for *issue*-oriented commit naming convention)
+ - Moodle project's clear cache **post-merge** hook
 
 
 ## Install
