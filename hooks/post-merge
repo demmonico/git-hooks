@@ -33,7 +33,7 @@ do
                 PROJECT_NAME="$( echo "${GIT_DIR}" | sed "s#^${DM_DIR}/projects/##g" | sed 's#/.*$##g' )"
                 if [ -x "${DM_DIR}/dm" ] && [ ! -z "${PROJECT_NAME}" ]; then
                     echo "Docker Manager was found at the \"${DM_DIR}\" folder. Clearing cache ... "
-                    bash -c "${DM_DIR}/dm exec ${PROJECT_NAME} -c moodle/cacheclear"
+                    bash -c "${DM_DIR}/dm exec ${PROJECT_NAME} -u www-data -c moodle/cacheclear"
                     break
 
                 else
