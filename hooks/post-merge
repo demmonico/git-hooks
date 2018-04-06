@@ -16,12 +16,12 @@ GIT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 while [ "${GIT_DIR}" != '/' ]
 do
     # Moodle project root
-    if [ -f "${GIT_DIR}/version.php" ] && grep -q 'MOODLE' "${GIT_DIR}/version.php"; then
+    if [ -f "${GIT_DIR}/version.php" ] && grep -q 'This file defines the current version of the core Moodle code being used.' "${GIT_DIR}/version.php"; then
         echo "Moodle project was found at the \"${GIT_DIR}\" folder"
 
         # we inside Docker
         if [ -z "$( cat /proc/1/cgroup | grep 'docker' )" ] && [ -f "${GIT_DIR}/admin/cli/purge_caches.php" ]; then
-            echo 'Docker engine was found. Clearing cache ... '
+            echo 'Docker engine was found. We are inside it. Clearing cache ... '
             bash -c "php ${GIT_DIR}/admin/cli/purge_caches.php && echo 'Done'"
 
         # we at the host
@@ -32,7 +32,7 @@ do
             do
                 PROJECT_NAME="$( echo "${GIT_DIR}" | sed "s#^${DM_DIR}/projects/##g" | sed 's#/.*$##g' )"
                 if [ -x "${DM_DIR}/dm" ] && [ ! -z "${PROJECT_NAME}" ]; then
-                    echo "Docker Manager was found at the \"${DM_DIR}\" folder. Clearing cache ... "
+                    echo "Docker Manager was found at the \"${DM_DIR}\" folder. Clearing cache for the '${PROJECT_NAME}' project ... "
                     bash -c "${DM_DIR}/dm exec ${PROJECT_NAME} -u www-data -c moodle/cacheclear"
                     break
 

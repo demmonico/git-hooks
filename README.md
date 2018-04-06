@@ -33,6 +33,15 @@ You could pull git hooks automatically using your `composer.json` file:
 ```
  - run `composer install` - git hooks will be downloaded automatically from this repo 
 
+
+#### Manual pulling git hook
+
+For downloading single file run:
+
+```sh
+wget -O post-merge https://raw.githubusercontent.com/demmonico/git-hooks/master/hooks/post-merge && chmod +x post-merge
+```
+
  
 ## Usage
 
