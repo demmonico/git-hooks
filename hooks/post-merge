@@ -16,11 +16,13 @@ GIT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 while [ "${GIT_DIR}" != '/' ]
 do
     # Moodle project root
-    if [ -f "${GIT_DIR}/version.php" ] && grep -q 'This file defines the current version of the core Moodle code being used.' "${GIT_DIR}/version.php"; then
+    if [ -f "${GIT_DIR}/version.php" ] && [ -f "${GIT_DIR}/admin/cli/purge_caches.php" ] && \
+        grep -q 'This file defines the current version of the core Moodle code being used.' "${GIT_DIR}/version.php"
+    then
         echo "Moodle project was found at the \"${GIT_DIR}\" folder"
 
         # we inside Docker
-        if [ -z "$( cat /proc/1/cgroup | grep 'docker' )" ] && [ -f "${GIT_DIR}/admin/cli/purge_caches.php" ]; then
+        if [ ! -z "$( cat /proc/1/cgroup | grep 'docker' )" ]; then
             echo 'Docker engine was found. We are inside it. Clearing cache ... '
             bash -c "php ${GIT_DIR}/admin/cli/purge_caches.php && echo 'Done'"
 
@@ -42,7 +44,7 @@ do
             done
 
             # simple virtual host using
-            if [ "${DM_DIR}" == '/' ] && [ -f "${GIT_DIR}/admin/cli/purge_caches.php" ]; then
+            if [ "${DM_DIR}" == '/' ]; then
                 echo 'Clearing cache ... '
                 bash -c "php ${GIT_DIR}/admin/cli/purge_caches.php && echo 'Done'"
             fi
